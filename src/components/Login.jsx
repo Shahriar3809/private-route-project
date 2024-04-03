@@ -1,13 +1,38 @@
-import { Link } from "react-router-dom";
+import { useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import  { AuthContext } from "../Provider/AuthProvider";
 
 
 const Login = () => {
 
+  const { signInUser, signInWithGoogle } = useContext(AuthContext);
+  const navigate = useNavigate();
+  // console.log(signInUser)
     const handleLogin = (event) => {
         event.preventDefault()
         const email = event.target.email.value;
         const password = event.target.password.value;
-        console.log(email, password)
+        
+        // Login from this page to Auth Provider
+        signInUser(email, password)
+        .then((result)=> {
+          console.log(result.user)
+          event.target.reset();
+          navigate('/')
+        })
+        .catch((error)=> {
+          console.error(error)
+        })
+    }
+
+    const handleGoogleSignIn = () => {
+      signInWithGoogle()
+      .then((result) => {
+        console.log(result.user)
+      })
+      .catch(error => {
+        console.log(error)
+      })
     }
 
     return (
@@ -15,7 +40,6 @@ const Login = () => {
         <div className="hero-content flex-col ">
           <div className="text-center ">
             <h1 className="text-5xl font-bold">Welcome! Login now!</h1>
-            
           </div>
           <div className="card shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
             <form onSubmit={handleLogin} className="card-body">
@@ -53,7 +77,13 @@ const Login = () => {
               </div>
             </form>
             <p className="text-center">
-              New to Our Website? Please{' '}<Link to='/register'><button className="btn btn-link p-0">Register</button></Link>
+              New to Our Website? Please{" "}
+              <Link to="/register">
+                <button className="btn btn-link p-0">Register</button>
+              </Link>
+            </p>
+            <p>
+              <button onClick={handleGoogleSignIn} className="btn btn-ghost">Google</button>
             </p>
           </div>
         </div>
